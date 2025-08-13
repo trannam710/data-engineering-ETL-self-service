@@ -1,0 +1,34 @@
+# Phần thông tin chung về pipeline
+pipeline_info:
+  name: "marketing_api_campaigns_v1" # Tên duy nhất của pipeline
+  owner: "marketing_team"
+  tags: ["marketing", "api"]
+  schedule: "0 2 * * *" # Lịch chạy: 2 giờ sáng mỗi ngày
+  description: "Lấy dữ liệu chiến dịch hàng ngày từ API Marketing nội bộ."
+
+# Phần định nghĩa nguồn dữ liệu
+source:
+  type: "generic_api" # Loại nguồn, để DAG factory biết dùng Operator nào
+  connection_id: "marketing_http_conn" # ID của HTTP Connection đã lưu trong Airflow UI
+  endpoint: "api/v2/campaigns"
+  # Các tham số cho API, có thể dùng macro của Airflow
+  params:
+    report_date: "{{ ds }}" # Lấy ngày thực thi của DAG
+    include_metrics: "true"
+
+# Phần định nghĩa nơi lưu dữ liệu
+destination:
+  type: "s3" # Loại đích đến
+  connection_id: "aws_s3_conn" # ID của S3 Connection trong Airflow
+  bucket: "my-company-datalake"
+  # Key trên S3 sẽ được tạo động
+  path: "raw/marketing_api/{{ ds }}/campaigns.json"
+
+# Phần định nghĩa các quy tắc kiểm tra chất lượng dữ liệu
+data_quality_checks:
+  - check_type: "min_row_count"
+    threshold: 10 # Phải có ít nhất 10 dòng
+  - check_type: "required_columns"
+    columns: ["campaign_id", "campaign_name", "spend", "clicks"]
+  - check_type: "unique_column"
+    column: "campaign_id" # Tất cả campaign_id phải là duy nhất
