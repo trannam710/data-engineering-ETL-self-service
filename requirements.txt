@@ -1,5 +1,6 @@
 apache-airflow-providers-apache-kafka
 apache-airflow-providers-apache-spark
 apache-airflow-providers-slack
+apache-airflow-providers-amazon
 kafka-python
 psycopg2-binary
