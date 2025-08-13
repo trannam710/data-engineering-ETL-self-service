@@ -1,0 +1,5 @@
+apache-airflow-providers-apache-kafka
+apache-airflow-providers-apache-spark
+kafka-python
+psycopg2-binary
+pyspark==3.5.0
