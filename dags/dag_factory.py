@@ -4,11 +4,13 @@ from pathlib import Path
 from airflow.models.dag import DAG
 from datetime import datetime
 
-from operators.api_to_s3 import GenericApiToLocalOperator
+from operators.api_to_s3 import GenericApiToS3Operator
+from operators.data_quality_operator import DataQualityCheckOperator
 
 # Import operators
 from airflow.operators.python import BranchPythonOperator
 from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
+
 
 # Path to the directory containing configuration files
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "configs"

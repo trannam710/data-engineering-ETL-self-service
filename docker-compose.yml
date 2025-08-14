@@ -139,11 +139,14 @@ services:
       - airflow-init
       - spark-master
       - postgres
+    env_file:
+      - fileName: .env
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
       AIRFLOW__WEBSERVER__SECRET_KEY: mysecretkey
       AIRFLOW__WEBSERVER__WORKERS: 2
+      AIRFLOW_CONN_AWS_S3_CONN: aws://${AWS_ACCESS_KEY_ID_VALUE}:${AWS_SECRET_ACCESS_KEY_VALUE}@
     ports:
       - "8080:8080"
     command: webserver
