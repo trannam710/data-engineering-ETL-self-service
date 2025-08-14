@@ -45,7 +45,7 @@ def create_dag(config: dict):
     ) as dag:
         
         # Task 1: Get data from API and save to S3
-        ingest_task = GenericApiToLocalOperator(
+        ingest_task = GenericApiToS3Operator(
             task_id="ingest_from_api",
             http_conn_id=source_config['connection_id'],
             endpoint=source_config['endpoint'],
