@@ -13,9 +13,14 @@ from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 
 
 # Path to the directory containing configuration files
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "configs"
+CONFIG_DIR = Path(__file__).resolve().parent.parent / "configs/sources"
+
+# Thêm dòng này để kiểm tra xem file đã được thực thi chưa
+print(f"Airflow is processing DAG factory from: {__file__}")
+print(f"Searching for YAML files in directory: {CONFIG_DIR}")
 
 def create_dag(config: dict):
+
     """
     This function takes a configuration dictionary and returns a DAG object.
     """
@@ -74,7 +79,7 @@ def create_dag(config: dict):
         # Send a Slack notification if data quality checks fail
         fail_task = SlackWebhookOperator(
             task_id='some_checks_failed',
-            http_conn_id='slack_conn',
+            slack_webhook_conn_id='slack_conn',
             message="""
             :red_circle: DAG {{ dag.dag_id }} fail in quality check.
             Reason: {{ ti.xcom_pull(task_ids='run_data_quality_checks', key='dq_summary')['errors'] }}
@@ -93,8 +98,9 @@ def create_dag(config: dict):
 
 # Loop through all YAML config files in the configs directory
 for config_file in CONFIG_DIR.glob("*.yaml"):
+    print(f"Processing config file: {config_file}")
+    # Load the YAML file
     with open(config_file, "r") as f:
         config_data = yaml.safe_load(f)
         dag_object = create_dag(config_data)
-        # Đưa DAG vào global scope để Airflow nhận diện
         globals()[dag_object.dag_id] = dag_object

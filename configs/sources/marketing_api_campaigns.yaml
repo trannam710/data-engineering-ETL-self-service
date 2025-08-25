@@ -9,8 +9,8 @@ pipeline_info:
 # Phần định nghĩa nguồn dữ liệu
 source:
   type: "generic_api" # Loại nguồn, để DAG factory biết dùng Operator nào
-  connection_id: "marketing_http_conn" # ID của HTTP Connection đã lưu trong Airflow UI
-  endpoint: "api/v2/campaigns"
+  connection_id: "api_connection_fake_user" # ID của HTTP Connection đã lưu trong Airflow UI
+  endpoint: "/users" # Endpoint của API
   # Các tham số cho API, có thể dùng macro của Airflow
   params:
     report_date: "{{ ds }}" # Lấy ngày thực thi của DAG
@@ -20,7 +20,7 @@ source:
 destination:
   type: "s3" # Loại đích đến
   connection_id: "aws_s3_conn" # ID của S3 Connection trong Airflow
-  bucket: "my-company-datalake"
+  bucket: "my-s3-bucket-v001"
   # Key trên S3 sẽ được tạo động
   path: "raw/marketing_api/{{ ds }}/campaigns.json"
 
@@ -29,6 +29,6 @@ data_quality_checks:
   - check_type: "min_row_count"
     threshold: 10 # Phải có ít nhất 10 dòng
   - check_type: "required_columns"
-    columns: ["campaign_id", "campaign_name", "spend", "clicks"]
+    columns: ["id", "name", "company", "username", "email", "address", "zip", "state", "country", "phone", "photo"]
   - check_type: "unique_column"
-    column: "campaign_id" # Tất cả campaign_id phải là duy nhất
+    column: "id" # Tất cả campaign_id phải là duy nhất
